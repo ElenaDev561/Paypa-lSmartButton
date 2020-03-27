@@ -1,62 +1,11 @@
 {
-    "id": "8MV433493X482260S",
-    "intent": "CAPTURE",
+    "id": "6PE686122T327990F",
     "purchase_units": [{
         "reference_id": "PUHF",
-        "amount": {
-            "currency_code": "USD",
-            "value": "220.00",
-            "breakdown": {
-                "item_total": {
-                    "currency_code": "USD",
-                    "value": "180.00"
-                },
-                "shipping": {
-                    "currency_code": "USD",
-                    "value": "20.00"
-                },
-                "handling": {
-                    "currency_code": "USD",
-                    "value": "10.00"
-                },
-                "tax_total": { "currency_code": "USD", "value": "20.00" },
-                "shipping_discount": { "currency_code": "USD", "value": "10.00" }
-            }
-        },
-        "payee": {
-            "email_address": "sb-zvpjq1260170@business.example.com",
-            "merchant_id": "JQ5H3667L9F2S"
-        },
-        "description": "Sporting Goods",
-        "custom_id": "CUST-HighFashions",
-        "soft_descriptor": "HighFashions",
-
-        "items": [{
-            "name": "T-Shirt",
-            "unit_amount": {
-                "currency_code": "USD",
-                "value": "90.00"
-            },
-            "tax": { "currency_code": "USD", "value": "10.00" },
-            "quantity": "1",
-            "description": "Green XL",
-            "sku": "sku01",
-            "category": "PHYSICAL_GOODS"
-        }, {
-            "name": "Shoes",
-            "unit_amount": {
-                "currency_code": "USD",
-                "value": "45.00"
-            },
-            "tax": { "currency_code": "USD", "value": "5.00" },
-            "quantity": "2",
-            "description": "Running, Size 10.5",
-            "sku": "sku02",
-            "category": "PHYSICAL_GOODS"
-        }],
         "shipping": {
-            "method": "United States Postal Service",
-            "name": { "full_name": "John Doe" },
+            "name": {
+                "full_name": "John Doe"
+            },
             "address": {
                 "address_line_1": "123 Townsend St",
                 "address_line_2": "Floor 6",
@@ -65,28 +14,74 @@
                 "postal_code": "94107",
                 "country_code": "US"
             }
+        },
+        "payments": {
+            "captures": [{
+                "id": "2T506356RK977952L",
+                "status": "COMPLETED",
+                "amount": {
+                    "currency_code": "USD",
+                    "value": "220.00"
+                },
+                "final_capture": true,
+                "seller_protection": {
+                    "status": "ELIGIBLE",
+                    "dispute_categories": [
+                        "ITEM_NOT_RECEIVED",
+                        "UNAUTHORIZED_TRANSACTION"
+                    ]
+                },
+                "seller_receivable_breakdown": {
+                    "gross_amount": {
+                        "currency_code": "USD",
+                        "value": "220.00"
+                    },
+                    "paypal_fee": {
+                        "currency_code": "USD",
+                        "value": "6.68"
+                    },
+                    "net_amount": {
+                        "currency_code": "USD",
+                        "value": "213.32"
+                    }
+                },
+                "custom_id": "CUST-HighFashions",
+                "links": [{
+                        "href": "https:\/\/api.sandbox.paypal.com\/v2\/payments\/captures\/2T506356RK977952L",
+                        "rel": "self",
+                        "method": "GET"
+                    },
+                    {
+                        "href": "https:\/\/api.sandbox.paypal.com\/v2\/payments\/captures\/2T506356RK977952L\/refund",
+                        "rel": "refund",
+                        "method": "POST"
+                    },
+                    {
+                        "href": "https:\/\/api.sandbox.paypal.com\/v2\/checkout\/orders\/6PE686122T327990F",
+                        "rel": "up",
+                        "method": "GET"
+                    }
+                ],
+                "create_time": "2020-03-25T02:43:20Z",
+                "update_time": "2020-03-25T02:43:20Z"
+            }]
         }
     }],
-    "create_time": "2020-03-24T15:59:47Z",
-    "links": [{
-            "href": "https:\/\/api.sandbox.paypal.com\/v2\/checkout\/orders\/8MV433493X482260S",
-            "rel": "self",
-            "method": "GET"
+    "payer": {
+        "name": {
+            "given_name": "John",
+            "surname": "Doe"
         },
-        {
-            "href": "https:\/\/www.sandbox.paypal.com\/checkoutnow?token=8MV433493X482260S",
-            "rel": "approve",
-            "method": "GET"
-        }, {
-            "href": "https:\/\/api.sandbox.paypal.com\/v2\/checkout\/orders\/8MV433493X482260S",
-            "rel": "update",
-            "method": "PATCH"
-        },
-        {
-            "href": "https:\/\/api.sandbox.paypal.com\/v2\/checkout\/orders\/8MV433493X482260S\/capture",
-            "rel": "capture",
-            "method": "POST"
+        "email_address": "sb-pfple1244115@personal.example.com",
+        "payer_id": "SF7EWMK2S2TFA",
+        "address": {
+            "country_code": "US"
         }
-    ],
-    "status": "CREATED"
+    },
+    "links": [{
+        "href": "https:\/\/api.sandbox.paypal.com\/v2\/checkout\/orders\/6PE686122T327990F",
+        "rel": "self",
+        "method": "GET"
+    }],
+    "status": "COMPLETED"
 }

@@ -20,8 +20,8 @@ class CreateOrder
             'intent' => 'AUTHORIZE',
             'application_context' =>
                 array(
-                    'return_url' => 'https://ghanabadminton.org/return',
-                    'cancel_url' => 'https://ghanabadminton.org/cancel',
+                    'return_url' => 'https://example.com/return',
+                    'cancel_url' => 'https://example.com/cancel',
                     'brand_name' => 'EXAMPLE INC',
                     'locale' => 'en-US',
                     'landing_page' => 'BILLING',
@@ -135,15 +135,14 @@ class CreateOrder
      * request body should be set as "AUTHORIZE" for authorize intent flow.
      * 
      */
-    private static function buildMinimumRequestBody($amounts)
+    private static function buildMinimumRequestBody()
     {
-        var_dump($amounts);
         return array(
             'intent' => 'AUTHORIZE',
             'application_context' =>
                 array(
-                    'return_url' => 'https://ghanabadminton.org/return',
-                    'cancel_url' => 'https://ghanabadminton.org/cancel',
+                    'return_url' => 'https://example.com/return',
+                    'cancel_url' => 'https://example.com/cancel'
                 ),
             'purchase_units' =>
                 array(
@@ -152,7 +151,7 @@ class CreateOrder
                             'amount' =>
                                 array(
                                     'currency_code' => 'USD',
-                                    'value' => $amounts
+                                    'value' => '220.00'
                                 )
                         )
                 )
@@ -163,11 +162,11 @@ class CreateOrder
      * This is the sample function which can be used to create an order. It uses the
      * JSON body returned by buildRequestBody() to create an new Order.
      */
-    public static function createOrder($debug=false, $amou)
+    public static function createOrder($debug=false)
     {
         $request = new OrdersCreateRequest();
         $request->headers["prefer"] = "return=representation";
-        $request->body = CreateOrder::buildMinimumRequestBody($amou);
+        $request->body = CreateOrder::buildRequestBody();
 
         $client = PayPalClient::client();
         $response = $client->execute($request);
@@ -197,52 +196,42 @@ class CreateOrder
      * This is the sample function which can be used to create an order. It uses the
      * JSON body returned by buildMinimumRequestBody() to create an new Order.
      */
-    public static function createOrderWithMinimumBody($debug=false, $amount)
+    public static function createOrderWithMinimumBody($debug=false)
     {
         $request = new OrdersCreateRequest();
         $request->headers["prefer"] = "return=representation";
-        $request->body = CreateOrder::buildMinimumRequestBody($amount);
+        $request->body = CreateOrder::buildMinimumRequestBody();
 
         $client = PayPalClient::client();
         $response = $client->execute($request);
-       
-        return json_encode($response->result);
+        if ($debug)
+        {
+            print "Order With Minimum Body\n";
+            print "Status Code: {$response->statusCode}\n";
+            print "Status: {$response->result->status}\n";
+            print "Order ID: {$response->result->id}\n";
+            print "Intent: {$response->result->intent}\n";
+            print "Links:\n";
+            foreach($response->result->links as $link)
+            {
+                print "\t{$link->rel}: {$link->href}\tCall Type: {$link->method}\n";
+            }
+
+            print "Gross Amount: {$response->result->purchase_units[0]->amount->currency_code} {$response->result->purchase_units[0]->amount->value}\n";
+
+            // To toggle printing the whole response body comment/uncomment below line
+            echo json_encode($response->result, JSON_PRETTY_PRINT), "\n";
+        }
+
+
+        return $response;
     }
 }
 
-if(isset($_POST['amount'] && isset($_POST['ajax'])))
-    {
-        $am = $_POST['amount'];
-        print_r($_POST['amount']);
-        //CreateOrder::createOrderWithMinimumBody(true,$am);
-        echo "success";
-    }
-    else {
-        
 
-        print_r("faled");        
-        $am = 0;
-        echo "failed";
-    }
 
 if (!count(debug_backtrace()))
 {
-    $am=0;
-    print_r($_POST);
-    if(isset($_POST['amount'] && isset($_POST['ajax'])))
-    {
-        $am = $_POST['amount'];
-        print_r($_POST['amount']);
-        //CreateOrder::createOrderWithMinimumBody(true,$am);
-        echo "success";
-    }
-    else {
-        
-
-        print_r("faled");        
-        $am = 0;
-        echo "failed";
-    }
-    //CreateOrder::createOrder(true);
-    
+    CreateOrder::createOrder(true);
+    CreateOrder::createOrderWithMinimumBody(true);
 }
