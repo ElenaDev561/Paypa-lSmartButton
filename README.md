@@ -1,4 +1,4 @@
-# REST API SDK for PHP V2
+# SERVER INTEGRATE BY USING REST API SDK for PHP V2
 
 ![Home Image](homepage.jpg)
 
@@ -47,118 +47,67 @@ $client = new PayPalHttpClient($environment);
 ```php
 // Construct a request object and set desired parameters
 // Here, OrdersCreateRequest() creates a POST request to /v2/checkout/orders
-use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
-$request = new OrdersCreateRequest();
-$request->prefer('return=representation');
-$request->body = [
-                     "intent" => "CAPTURE",
-                     "purchase_units" => [[
-                         "reference_id" => "test_ref_id1",
-                         "amount" => [
-                             "value" => "100.00",
-                             "currency_code" => "USD"
-                         ]
-                     ]],
-                     "application_context" => [
-                          "cancel_url" => "https://example.com/cancel",
-                          "return_url" => "https://example.com/return"
-                     ] 
-                 ];
+```On Client```
 
-try {
-    // Call API with your client and get a response for your call
-    $response = $client->execute($request);
-    
-    // If call returns body in response, you can get the deserialized version from the result attribute of the response
-    print_r($response);
-}catch (HttpException $ex) {
-    echo $ex->statusCode;
-    print_r($ex->getMessage());
-}
-```
-#### Example Output:
-```
-Status Code: 201
-Id: 8GB67279RC051624C
-Intent: CAPTURE
-Gross_amount:
-	Currency_code: USD
-	Value: 100.00
-Purchase_units:
-	1:
-		Amount:
-			Currency_code: USD
-			Value: 100.00
-Create_time: 2018-08-06T23:34:31Z
-Links:
-	1:
-		Href: https://api.sandbox.paypal.com/v2/checkout/orders/8GB67279RC051624C
-		Rel: self
-		Method: GET
-	2:
-		Href: https://www.sandbox.paypal.com/checkoutnow?token=8GB67279RC051624C
-		Rel: approve
-		Method: GET
-	3:
-		Href: https://api.sandbox.paypal.com/v2/checkout/orders/8GB67279RC051624C/capture
-		Rel: capture
-		Method: POST
-Status: CREATED
-```
+createOrder: function(data, actions) {
+                return fetch('/create-transation', {
+                    method: 'post',
+                    body:JSON.stringify($('#donateamount').val()),
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                }).then(function(res) {
+                    return res.json();
+                 })
+                .then(function(data) {
+                    return data.id;//***important***
+                });
+            },
 
-## Capturing an Order
-Before capture, Order should be approved by the buyer using the approval URL returned in the create order response.
-### Code to Execute:
-```php
-use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
-// Here, OrdersCaptureRequest() creates a POST request to /v2/checkout/orders
-// $response->result->id gives the orderId of the order created above
-$request = new OrdersCaptureRequest("APPROVED-ORDER-ID");
-$request->prefer('return=representation');
-try {
-    // Call API with your client and get a response for your call
-    $response = $client->execute($request);
-    
-    // If call returns body in response, you can get the deserialized version from the result attribute of the response
-    print_r($response);
-}catch (HttpException $ex) {
-    echo $ex->statusCode;
-    print_r($ex->getMessage());
-}
-```
+            // Finalize the transaction
+            onApprove: function(data, actions) {
 
-#### Example Output:
-```
-Status Code: 201
-Id: 8GB67279RC051624C
-Create_time: 2018-08-06T23:39:11Z
-Update_time: 2018-08-06T23:39:11Z
-Payer:
-	Name:
-		Given_name: test
-		Surname: buyer
-	Email_address: test-buyer@paypal.com
-	Payer_id: KWADC7LXRRWCE
-	Phone:
-		Phone_number:
-			National_number: 408-411-2134
-	Address:
-		Country_code: US
-Links:
-	1:
-		Href: https://api.sandbox.paypal.com/v2/checkout/orders/3L848818A2897925Y
-		Rel: self
-		Method: GET
-Status: COMPLETED
-```
+                return fetch('/capturtransation', {
 
-## Running tests
+                    method:'POST',
+                    headers: {
+                    'content-type': 'application/json'
+                    },
+                     body: JSON.stringify(data.orderID),
 
-To run integration tests using your client id and secret, clone this repository and run the following command:
-```sh
-$ composer install
-$ CLIENT_ID=YOUR_SANDBOX_CLIENT_ID CLIENT_SECRET=OUR_SANDBOX_CLIENT_SECRET composer integration
+                }).then(function(res) {
+                    return res.json();
+                 })
+                .then(function(details) {
+                    
+                    actions.redirect('/return_url');
+                    return details.id;
+                });             
+              
+            },
+            onCancel: function(data,actions){
+                actions.redirect('/cancel_url');
+            }
 ```
+```JSON anlysis and synchronization``
+
+$contentType = isset($_SERVER["CONTENT_TYPE"]) ?
+        trim($_SERVER["CONTENT_TYPE"]) : '';
+
+        if ($contentType === "application/json") {
+
+            $content = trim(file_get_contents("php://input"));            
+            $decoded = json_decode($content, true);
+
+        if(!isset($decoded)) {
+
+                print_r($decoded);
+
+             } else {                
+               
+                CreateOrder::createOrder(true,(int)$decoded);
+             }
+         }
 
 ## Samples
 
